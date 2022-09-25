@@ -2,16 +2,29 @@ use std::env;
 use std::fs;
 use std::path::Path;
 
+mod travers;
+
 // make sure that all print statments except the result goes
 // to the standard error eprintln!()
 
-fn main() {
+fn main() -> std::io::Result<()> {
 
-    let dir = Path::new("C:/Users/simon");
-
-    let entries = fs::read_dir(dir).unwrap();
+    let entries = fs::read_dir(env::current_dir()?)?;
     
     for (n, entry) in entries.enumerate() {
-        println!("{}  :  {:?}", n, entry);
+        let entry = entry?;
+        println!("{}: Path: {:?}     FILE NAME: {:?}", n, entry.path(), entry.file_name());
     }
+
+    let entries = fs::read_dir(env::current_dir()?)?;
+
+    for (n, e) in entries.enumerate() {
+        let e = e?;
+        let md = fs::metadata(e.path())?;
+        println!("{}:   {}", n, md.is_dir());
+    }
+
+
+
+    Ok(())
 }
