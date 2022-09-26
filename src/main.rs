@@ -1,30 +1,58 @@
 use std::env;
 use std::fs;
 use std::path::Path;
+use std::path::PathBuf;
 
-mod travers;
+use clap::Parser;
+
+use crate::traversal::get_subdirs_with_name;
+
+mod traversal;
+
 
 // make sure that all print statments except the result goes
 // to the standard error eprintln!()
+// you should also be able to chose that you want the closest dir with a flag
 
-fn main() -> std::io::Result<()> {
+#[derive(Parser,Default,Debug)]
+#[clap(author = "Simon Gustafsson", version, about)]
+/// Improved version of the command cd
+struct Args {
+    file_name: String,
+    #[clap(short, long)]
+    max_depth: Option<usize>,
+    #[clap(short, long)]
+    /// automaticly chose the closest directory if there are multiple directories with the same name
+    closest: Option<bool>, 
+}
 
-    let entries = fs::read_dir(env::current_dir()?)?;
-    
-    for (n, entry) in entries.enumerate() {
-        let entry = entry?;
-        println!("{}: Path: {:?}     FILE NAME: {:?}", n, entry.path(), entry.file_name());
+fn main() {
+
+    /* let path = PathBuf::from("C:\\Users\\simon");
+
+    let res = get_subdirs_with_name("java", &path, usize::max_value());
+
+    println!("{:?}", res); */
+
+    let args = Args::parse();
+    let max_depth = if args.max_depth.is_some() {
+        args.max_depth.unwrap()
+    } else { 
+        usize::max_value()
+    };
+    let dirs = get_subdirs_with_name(&args.file_name, &std::env::current_dir().unwrap(), max_depth);
+
+    if dirs.len() == 0 {
+        eprintln!("No directories with name '{}'", args.file_name);
+    } else if dirs.len() == 1 {
+        let path_string = dirs.get(0).unwrap().0.to_str().unwrap();
+        println!("{}", path_string)
+    } else {
+        more_than_one_dir(dirs);
     }
 
-    let entries = fs::read_dir(env::current_dir()?)?;
+}
 
-    for (n, e) in entries.enumerate() {
-        let e = e?;
-        let md = fs::metadata(e.path())?;
-        println!("{}:   {}", n, md.is_dir());
-    }
+fn more_than_one_dir(dirs: Vec<(PathBuf, usize)>) {
 
-
-
-    Ok(())
 }
