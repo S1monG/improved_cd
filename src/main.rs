@@ -2,6 +2,7 @@ use std::env;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
+use std::process::Command;
 
 use clap::Parser;
 
@@ -46,7 +47,8 @@ fn main() {
         eprintln!("No directories with name '{}'", args.file_name);
     } else if dirs.len() == 1 {
         let path_string = dirs.get(0).unwrap().0.to_str().unwrap();
-        println!("{}", path_string)
+        let output = Command::new("./run.sh")
+                    .arg(path_string);
     } else {
         more_than_one_dir(dirs);
     }
