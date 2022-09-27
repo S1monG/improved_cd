@@ -1,7 +1,7 @@
 Improved cd to be used in terminal. See zoxide for a similar build.
 
 It will by default search all the way down and if there are multiple folders with that name it will let you chose
-for example if you search for a directory 'japan' :
+for example if you search for a directory 'japan' :  
 [1] path/japan  
 [2] otherpath/japan  
 [3] lastpath/japan  
