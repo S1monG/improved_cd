@@ -29,12 +29,6 @@ struct Args {
 
 fn main() {
 
-    /* let path = PathBuf::from("C:\\Users\\simon");
-
-    let res = get_subdirs_with_name("java", &path, usize::max_value());
-
-    println!("{:?}", res); */
-
     let args = Args::parse();
     let max_depth = if args.max_depth.is_some() {
         args.max_depth.unwrap()
@@ -46,9 +40,7 @@ fn main() {
     if dirs.len() == 0 {
         eprintln!("No directories with name '{}'", args.file_name);
     } else if dirs.len() == 1 {
-        let path_string = dirs.get(0).unwrap().0.to_str().unwrap();
-        let output = Command::new("./run.sh")
-                    .arg(path_string);
+        println!("{}", dirs.get(0).unwrap().0.to_str().unwrap());
     } else {
         more_than_one_dir(dirs);
     }
@@ -56,5 +48,5 @@ fn main() {
 }
 
 fn more_than_one_dir(dirs: Vec<(PathBuf, usize)>) {
-
+    
 }
