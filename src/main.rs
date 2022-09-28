@@ -1,97 +1,27 @@
-use std::path::PathBuf;
-
 use clap::Parser;
-
 use crate::traversal::get_subdirs_with_name;
+use crate::utils::*;
 
 mod traversal;
+mod utils;
 
-#[derive(Parser, Default, Debug)]
-#[clap(author = "Simon Gustafsson", version, about)]
-/// Improved version of the command cd
-struct Args {
-    /// Name of directory/directories to search for
-    file_name: String,
-
-    #[clap(short, long)]
-    /// Max depth to search for the directory
-    max_depth: Option<usize>,
-
-    #[clap(short, long, parse(from_occurrences))]
-    /// Automaticly chose the closest directory if there are multiple directories with the same name
-    closest: usize,
-
-    #[clap(short, long, parse(from_occurrences))]
-    /// Searches from the root if true
-    root: usize,
-}
 
 fn main() {
     let args = Args::parse();
-    let max_depth = if args.max_depth.is_some() {
-        args.max_depth.unwrap()
-    } else {
-        usize::max_value()
-    };
+    let (file_name, start, max_depth, closest) = process_args(args);
     let dirs = get_subdirs_with_name(
-        &args.file_name,
-        &std::env::current_dir().unwrap(),
+        file_name.clone(),
+        start,
         max_depth,
+        closest,
     );
 
     if dirs.is_empty() {
-        no_dirs(args)
+        no_dirs(&file_name)
     } else if dirs.len() == 1 {
         one_dir(dirs);
     } else {
-        more_than_one_dir(dirs, &args.file_name);
+        more_than_one_dir(dirs, &file_name);
     }
 }
 
-fn no_dirs(args: Args) {
-    eprintln!("No directories with name '{}'", args.file_name);
-}
-
-fn one_dir(dirs: Vec<PathBuf>) {
-    let path_name = dirs.get(0).unwrap().to_str().unwrap();
-    println!("{}", path_name);
-}
-
-fn more_than_one_dir(dirs: Vec<PathBuf>, file_name: &str) {
-    if dirs.len() > 10 {
-        eprintln!(
-            "There are {} directories with name '{}'",
-            dirs.len(),
-            file_name
-        );
-        eprintln!("Do you want to see all? Y/N");
-        let input = parse_input();
-        if input.trim().to_lowercase() != "y" {
-            std::process::exit(0);
-        }
-    }
-
-    eprintln!("Choose which directory you want to cd to");
-
-    list_dirs(&dirs);
-    let input = parse_input();
-    let n: usize = input.trim().parse().unwrap();
-    if n <= dirs.len() {
-        let path_name = dirs.get(n).unwrap().to_str().unwrap();
-        println!("{}", path_name);
-    } else {
-        eprintln!("Outside of range");
-    }
-}
-
-fn list_dirs(dirs: &[PathBuf]) {
-    for (i, dir) in dirs.iter().enumerate() {
-        eprintln!("[{}] : {}", i, dir.to_str().unwrap());
-    }
-}
-
-fn parse_input() -> String {
-    let mut buffer = String::new();
-    std::io::stdin().read_line(&mut buffer).unwrap();
-    buffer
-}
