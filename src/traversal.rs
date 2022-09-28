@@ -2,6 +2,8 @@ use std::collections::VecDeque;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use rayon::prelude::*;
+
 pub fn get_subdirs_with_name(
     file_name: &str,
     start: &Path,
@@ -24,7 +26,7 @@ pub fn get_subdirs_with_name(
         let dirs = fs::read_dir(entry);
         //skip directories where access is denied
         if let Ok(d) = dirs {
-            for dir in d {
+            for dir in d.par_bridge() {
                 let dir = dir.unwrap();
                 if dir.file_type().unwrap().is_dir() {
                     if dir.file_name() == file_name {
