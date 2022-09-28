@@ -52,12 +52,12 @@ fn no_dirs(args: Args) {
     eprintln!("No directories with name '{}'", args.file_name);
 }
 
-fn one_dir(dirs: Vec<(PathBuf, usize)>) {
-    let path_name = dirs.get(0).unwrap().0.to_str().unwrap();
+fn one_dir(dirs: Vec<PathBuf>) {
+    let path_name = dirs.get(0).unwrap().to_str().unwrap();
     println!("{}", path_name);
 }
 
-fn more_than_one_dir(dirs: Vec<(PathBuf, usize)>, file_name: &str) {
+fn more_than_one_dir(dirs: Vec<PathBuf>, file_name: &str) {
     if dirs.len() > 10 {
         eprintln!(
             "There are {} directories with name '{}'",
@@ -77,16 +77,16 @@ fn more_than_one_dir(dirs: Vec<(PathBuf, usize)>, file_name: &str) {
     let input = parse_input();
     let n: usize = input.trim().parse().unwrap();
     if n <= dirs.len() {
-        let path_name = dirs.get(n).unwrap().0.to_str().unwrap();
+        let path_name = dirs.get(n).unwrap().to_str().unwrap();
         println!("{}", path_name);
     } else {
         eprintln!("Outside of range");
     }
 }
 
-fn list_dirs(dirs: &[(PathBuf, usize)]) {
+fn list_dirs(dirs: &[PathBuf]) {
     for (i, dir) in dirs.iter().enumerate() {
-        eprintln!("[{}] : {}", i, dir.0.to_str().unwrap());
+        eprintln!("[{}] : {}", i, dir.to_str().unwrap());
     }
 }
 
