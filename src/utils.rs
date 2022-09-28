@@ -1,6 +1,5 @@
-use std::path::PathBuf;
 use clap::Parser;
-
+use std::path::PathBuf;
 
 #[derive(Parser, Default, Debug)]
 #[clap(author = "Simon Gustafsson", version, about)]
@@ -33,18 +32,9 @@ pub fn process_args(args: Args) -> (String, PathBuf, usize, bool) {
     } else {
         PathBuf::from("/")
     };
-    let closest = if args.closest == 0 {
-        false
-    } else {
-        true
-    };
+    let closest = args.closest != 0;
 
-    (
-        args.file_name,
-        start,
-        max_depth,
-        closest
-    )
+    (args.file_name, start, max_depth, closest)
 }
 
 pub fn no_dirs(file_name: &str) {
