@@ -13,4 +13,4 @@ You can also add a flag to tell it to search from the root, for example 'cdd afo
   
 You need to add a script in your $PROFILE file. This may look different depending on what terminal  
 you are using. This is an example of how it may look in PowerShell  
-![Alt text](/images/improved_cd_screenshot.jpg "Screenshot of my powershell script")
+![Alt text](/images/powershell_script.png "Screenshot of my powershell script")
