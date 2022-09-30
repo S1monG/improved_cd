@@ -1,5 +1,8 @@
 Improved cd to be used in terminal. See zoxide for a similar build.
 
+fix so that cdd will cache history of paths already searched for in a file and check that file when running
+to speed up the process for directories that are often visited.
+
 It will by default search all the way down and if there are multiple folders with that name it will let you chose
 for example if you search for a directory 'japan' :  
 [1] path/japan  
