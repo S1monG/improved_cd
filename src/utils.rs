@@ -1,5 +1,5 @@
 use clap::Parser;
-use std::path::PathBuf;
+use std::{path::PathBuf, fs::File, io::Read};
 
 #[derive(Parser, Default, Debug)]
 #[clap(author = "Simon Gustafsson", version, about)]
@@ -85,3 +85,30 @@ pub fn parse_input() -> String {
     std::io::stdin().read_line(&mut buffer).unwrap();
     buffer
 }
+
+
+// creates the cache file if it does not already exist
+pub fn get_cache() -> File {
+    if let Ok(file) = File::open("cache.txt") {
+        return file;
+    } else {
+        return File::create("cache.txt").unwrap();
+    }
+}
+
+// returns the full path of the first matching filename
+pub fn check_contents(file_name : &str) -> Option<String> {
+    let mut cache = get_cache();
+    let mut content = String::new();
+    cache.read_to_string(&mut content).unwrap();
+    let paths = content.split("\n");
+    for row in paths {
+        let file = row.split("\\").last().unwrap();
+        if file_name == file {
+            return Option::from(row.to_string());
+        }
+    }
+
+    None
+}
+
