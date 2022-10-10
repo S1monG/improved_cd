@@ -86,6 +86,23 @@ pub fn parse_input() -> String {
     buffer
 }
 
+pub fn write_path_to_file(path: PathBuf) {
+
+    if !path_exists(path) {
+        
+    }
+}
+
+fn path_exists(path: PathBuf) -> bool {
+    let mut content = String::new();
+    get_cache().read_to_string(&mut content);
+    for row in content.split("\n") {
+        if path.to_str().unwrap() == row {
+            return true;
+        }
+    }
+    false
+}
 
 // creates the cache file if it does not already exist
 pub fn get_cache() -> File {
