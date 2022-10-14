@@ -2,8 +2,7 @@ use crate::traversal::get_subdirs_with_name;
 use crate::utils::*;
 use clap::Parser;
 
-use std::fs::File;
-use std::io::prelude::*;
+use std::path::PathBuf;
 
 mod traversal;
 mod utils;
@@ -11,16 +10,21 @@ mod utils;
 fn main() {
     let args = Args::parse();
     let (file_name, start, max_depth, closest) = process_args(args);
-    let dirs = get_subdirs_with_name(file_name.clone(), start, max_depth, closest);
 
-    check_contents("abcd");
-
-    if dirs.is_empty() {
-        no_dirs(&file_name)
-    } else if dirs.len() == 1 {
-        one_dir(dirs);
+    let is_cached = check_contents(&file_name);
+    if is_cached.is_some() {
+        eprintln!("DEBUGGGGG");
+        one_dir(&PathBuf::from(is_cached.unwrap()));
     } else {
-        more_than_one_dir(dirs, &file_name);
+        let dirs = get_subdirs_with_name(file_name.clone(), start, max_depth, closest);
+
+        if dirs.is_empty() {
+            no_dirs(&file_name)
+        } else if dirs.len() == 1 {
+            write_path_to_cache(dirs.get(0).unwrap().to_str().unwrap());
+            one_dir(dirs.get(0).unwrap());
+        } else {
+            more_than_one_dir(dirs, &file_name);
+        }
     }
 }
-

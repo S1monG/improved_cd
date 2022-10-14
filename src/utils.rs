@@ -1,5 +1,9 @@
 use clap::Parser;
-use std::{path::PathBuf, fs::File, io::Read};
+use std::{
+    fs::OpenOptions,
+    io::{Read, Write},
+    path::PathBuf,
+};
 
 #[derive(Parser, Default, Debug)]
 #[clap(author = "Simon Gustafsson", version, about)]
@@ -42,8 +46,8 @@ pub fn no_dirs(file_name: &str) {
     println!("{}", std::env::current_dir().unwrap().display())
 }
 
-pub fn one_dir(dirs: Vec<PathBuf>) {
-    let path_name = dirs.get(0).unwrap().to_str().unwrap();
+pub fn one_dir(path: &PathBuf) {
+    let path_name = path.to_str().unwrap();
     println!("{}", path_name);
 }
 
@@ -86,36 +90,20 @@ pub fn parse_input() -> String {
     buffer
 }
 
-pub fn write_path_to_file(path: PathBuf) {
-
-    if !path_exists(path) {
-        
-    }
-}
-
-fn path_exists(path: PathBuf) -> bool {
-    let mut content = String::new();
-    get_cache().read_to_string(&mut content);
-    for row in content.split("\n") {
-        if path.to_str().unwrap() == row {
-            return true;
-        }
-    }
-    false
-}
-
-// creates the cache file if it does not already exist
-pub fn get_cache() -> File {
-    if let Ok(file) = File::open("cache.txt") {
-        return file;
-    } else {
-        return File::create("cache.txt").unwrap();
-    }
+pub fn write_path_to_cache(path: &str) {
+    let mut file = OpenOptions::new().append(true).open("cache.txt").unwrap();
+    file.write((String::from("\n") + path).as_bytes()).unwrap();
 }
 
 // returns the full path of the first matching filename
-pub fn check_contents(file_name : &str) -> Option<String> {
-    let mut cache = get_cache();
+// None if the file is not in the cache
+pub fn check_contents(file_name: &str) -> Option<String> {
+    let mut cache = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .open("cache.txt")
+        .unwrap();
     let mut content = String::new();
     cache.read_to_string(&mut content).unwrap();
     let paths = content.split("\n");
@@ -128,4 +116,3 @@ pub fn check_contents(file_name : &str) -> Option<String> {
 
     None
 }
-
